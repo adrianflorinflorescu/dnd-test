@@ -1,5 +1,55 @@
-import { useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { DragDropContext, Draggable, Droppable, DropResult, OnDragEndResponder } from "react-beautiful-dnd";
+
+
+interface Item {
+  id: string;
+  name: string;
+}
+
+interface SelectedItemsContextProps {
+  selectedItems: Item[];
+  addToSelectedItems: (item: Item) => void;
+  removeFromSelectedItems: (itemId: string) => void;
+}
+
+export const SelectedItemsContext = createContext<SelectedItemsContextProps | undefined>(undefined);
+
+interface SelectedItemsProviderProps {
+  children: React.ReactNode;
+}
+
+
+export const SelectedItemsProvider: React.FC<SelectedItemsProviderProps> = ({ children }) => {
+  const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+
+  const addToSelectedItems = (item: Item) => {
+    setSelectedItems((prevItems) => [...prevItems, item]);
+  };
+
+  const removeFromSelectedItems = (itemId: string) => {
+    setSelectedItems((prevItems) =>
+      prevItems.filter((item) => item.id !== itemId)
+    );
+  };
+
+  return (
+    <SelectedItemsContext.Provider
+      value={{ selectedItems, addToSelectedItems, removeFromSelectedItems }}
+    >
+      {children}
+    </SelectedItemsContext.Provider>
+  );
+};
+
+export const useSelectedItems = (): SelectedItemsContextProps => {
+  const context = useContext(SelectedItemsContext);
+  if (!context) {
+    throw new Error('useSelectedItems must be used within a SelectedItemsProvider');
+  }
+  return context;
+}
+
 const DATA = [
   {
     id: "0e2f0db1-5457-46b0-949e-8032d2f9997a",
@@ -89,10 +139,10 @@ function App() {
     };
 
   return (
-    <div className="layout__wrapper">
-      <div className="card">
+    <SelectedItemsProvider>
+      <div className="w-80 m-auto">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="header">
+        <div className="header">
             <h1>Shopping List</h1>
           </div>
           <Droppable droppableId="ROOT" type="group">
@@ -121,33 +171,51 @@ function App() {
           </Droppable>
         </DragDropContext>
       </div>
-    </div>
+    </SelectedItemsProvider>
   );
 }
 
-function StoreList({ name, items, id }: {
+interface StoreListProps {
   name: string;
-  items: { id: string; name: string }[];
+  items: Item[];
   id: string;
-}) {
+}
+
+
+function StoreList({ name, items, id }: StoreListProps) {
+  const { selectedItems, addToSelectedItems, removeFromSelectedItems } = useSelectedItems();
   return (
     <Droppable droppableId={id}>
       {(provided) => (
-        <div {...provided.droppableProps} ref={provided.innerRef}>
-          <div className="store-container">
+        <div {...provided.droppableProps} ref={provided.innerRef} className="border border-blue-100">
+          <div>
             <h3 className="text-red-200">{name}</h3>
           </div>
           <div className="items-container">
             {items.map((item, index) => (
               <Draggable draggableId={item.id} index={index} key={item.id}>
-                {(provided) => (
+                {(provided, snapshot) => (
                   <div
-                    className="item-container"
+                    className={`item-container ${selectedItems.some(i => i.id === item.id) ? 'text-blue-600' :'text-blue-400'}`}
+                    onClick={(e) => {
+
+                      // if control is pressed, add to selected items
+
+                      if(!e.ctrlKey) {
+                        return;
+                      }
+
+                      if (selectedItems.some(i => i.id === item.id)) {
+                        removeFromSelectedItems(item.id);
+                      } else {
+                        addToSelectedItems(item);
+                      }
+                    }}
                     {...provided.dragHandleProps}
                     {...provided.draggableProps}
                     ref={provided.innerRef}
                   >
-                    <h4>{item.name}</h4>
+                    <h4>{item.name} {snapshot.isDragging ? 'dragging' : ''} </h4>
                   </div>
                 )}
               </Draggable>
