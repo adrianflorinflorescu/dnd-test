@@ -104,6 +104,24 @@ const specialArraySlice = createSlice({
       console.log('ping');
       return state;
     },
+
+    moveRvTo: (state, action) => {
+      console.log('moveRvTo', action.payload);
+      const { rvId, toId } = action.payload;
+      const rv = state.find((item) => item.items.some((rv) => rv.id === rvId));
+      if (!rv) {
+        console.log('rv not found');
+        return;
+      };
+      const rvIndex = rv.items.findIndex((rv) => rv.id === rvId);
+      const rvToMove = rv.items.splice(rvIndex, 1)[0];
+      const to = state.find((item) => item.id === toId);
+      if (!to) {
+        console.log('to not found');
+        return;
+      };
+      to.items.push(rvToMove);
+    }
   },
 })
 

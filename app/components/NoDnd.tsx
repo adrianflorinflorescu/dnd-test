@@ -5,8 +5,15 @@ import { useSpecialArray } from "~/useSpecialArray";
 const RoadVehicleComponent = ({rv}: {
   rv: RVItem
 }) => {
+  const {moveRvTo} = useSpecialArray();
+
   return (
-    <div className={`border border-red-200 p-4`}>
+    <div className={`border border-red-200 p-4`}
+      onClick={() => {
+        moveRvTo(rv.id, "UNASSIGNED");
+      }
+      }
+    >
       <p className="text-sm">{rv.id}</p>
     </div>
   );
@@ -80,16 +87,16 @@ function Tree({data}: {data: (UnassignedItem | RadioItem)[]}) {
 
 function NoDnd() {
 
-  const data = useSpecialArray();
+  const {data} = useSpecialArray();
 
 
-  const unassignedData = data.filter((item) => item.id === "UNASSIGNED");
-  const restData = data.filter((item) => item.id !== "UNASSIGNED");
+  const unassignedData = data.filter((item) => item.type === ITEM_TYPES.UNASSIGNED);
+  const radiosData = data.filter((item) => item.type === ITEM_TYPES.RADIO);
 
   return (
     <div className="m-auto flex w-[1200px] p-8">
         <div className="flex w-1/2 flex-col">
-          <Tree data={restData} />
+          <Tree data={radiosData} />
         </div>
         <div className="flex w-1/2 flex-col">
           <Tree data={unassignedData} />
