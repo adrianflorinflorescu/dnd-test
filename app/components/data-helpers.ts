@@ -3,7 +3,7 @@ interface BaseItem {
   name: string;
 }
 
-enum ITEM_TYPES {
+export enum ITEM_TYPES {
   "RV" = "RV",
   "GROUP" = "GROUP",
   "UNASSIGNED" = "UNASSIGNED",
@@ -19,18 +19,18 @@ interface GroupItem extends BaseItem {
   items: RVItem[];
 }
 
-interface UnassignedItem extends BaseItem {
+export interface UnassignedItem extends BaseItem {
   type: ITEM_TYPES.UNASSIGNED;
   items: Array<RVItem | GroupItem>;
 }
 
-interface RadioItem extends BaseItem {
+export interface RadioItem extends BaseItem {
   type: ITEM_TYPES.RADIO;
   items: Array<RVItem | GroupItem>;
 }
 
 
-function generateRVs({
+export function generateRVs({
   numberOfRvS,
   prefix,
 }: {
@@ -48,7 +48,7 @@ function generateRVs({
   return rvs;
 }
 
-function generateGroups({
+export function generateGroups({
   numberOfGroups,
   numberOfRvS,
   prefix,
@@ -69,131 +69,4 @@ function generateGroups({
   return groups;
 }
 
-type DataType = [UnassignedItem, ...RadioItem[]];
-
-
-const DATA: DataType = [
-  {
-    type: ITEM_TYPES.UNASSIGNED,
-    id: "UNASSIGNED",
-    name: "UNASSIGNED",
-    items: [
-      ...generateRVs({ numberOfRvS: 2, prefix: "UNASSIGNED" }),
-      ...generateGroups({
-        numberOfGroups: 1,
-        numberOfRvS: 2,
-        prefix: "UNASSIGNED",
-      }),
-    ],
-  },
-  {
-    type: ITEM_TYPES.RADIO,
-    id: "RADIO-1",
-    name: "RADIO-1",
-    items: [
-      ...generateRVs({ numberOfRvS: 3, prefix: "RADIO-1" }),
-      ...generateGroups({
-        numberOfGroups: 2,
-        numberOfRvS: 3,
-        prefix: "RADIO-1",
-      }),
-    ],
-  },
-  {
-    type: ITEM_TYPES.RADIO,
-    id: "RADIO-2",
-    name: "RADIO-2",
-    items: [
-      ...generateRVs({ numberOfRvS: 2, prefix: "RADIO-2" }),
-      ...generateGroups({
-        numberOfGroups: 1,
-        numberOfRvS: 2,
-        prefix: "RADIO-2",
-      }),
-      
-    ],
-  },
-  {
-    type:  ITEM_TYPES.RADIO,
-    id: "RADIO-3",
-    name: "RADIO-3",
-    items: [],
-  },
-  {
-    type:  ITEM_TYPES.RADIO,
-    id: "RADIO-4",
-    name: "RADIO-4",
-    items: [
-      ...generateRVs({ numberOfRvS: 2, prefix: "RADIO-4" }),
-    ],
-  },
-  {
-    type:  ITEM_TYPES.RADIO,
-    id: "RADIO-5",
-    name: "RADIO-5",
-    items: [
-      ...generateRVs({ numberOfRvS: 2, prefix: "RADIO-5" }),
-    ],
-  },
-  {
-    type:  ITEM_TYPES.RADIO,
-    id: "RADIO-6",
-    name: "RADIO-6",
-    items: [
-      ...generateRVs({ numberOfRvS: 2, prefix: "RADIO-6" }),
-      ...generateGroups({
-        numberOfGroups: 1,
-        numberOfRvS: 2,
-        prefix: "RADIO-6",
-      }),
-    ],
-  },
-  {
-    type:  ITEM_TYPES.RADIO,
-    id: "RADIO-7",
-    name: "RADIO-7",
-    items: [
-      ...generateRVs({ numberOfRvS: 2, prefix: "RADIO-7" }),
-      ...generateGroups({
-        numberOfGroups: 1,
-        numberOfRvS: 2,
-        prefix: "RADIO-7",
-      }),
-    ],
-  },
-];
-
-
-export function moveRVToUnassigned({rv, data}: {rv: RVItem, data: DataType}): DataType {
-
-  const rvClone = structuredClone(rv);
-  const dataClone = structuredClone(data);
-
-  // Remove item from it's original location
-
-  dataClone.forEach((radio) => {
-    radio.items.forEach((item, index) => {
-      if (item.id === rv.id) {
-        radio.items.splice(index, 1);
-      }
-
-      if (item.type === ITEM_TYPES.GROUP) {
-        item.items.forEach((groupItem, groupIndex) => {
-          if (groupItem.id === rv.id) {
-            item.items.splice(groupIndex, 1);
-          }
-        });
-      }
-    });
-  });
-
-  // Add item to unassigned
-
-  dataClone[0].items.push(rvClone);
-
-  return dataClone;
-
-
-}
-
-export {DATA};
+export type DataType = [UnassignedItem, ...RadioItem[]];
