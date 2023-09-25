@@ -14,7 +14,13 @@ function Checkbox(props: CheckboxProps) {
     }
   }, [props.state]);
 
-  return <input ref={ref} type="checkbox" checked={props.state === 'checked'} onChange={e => props.onChange(e.target.checked ? 'checked' : 'unchecked')} />;
+  return <input ref={ref} type="checkbox" checked={props.state === 'checked'} onChange={
+    (e) => {
+      if (props.onChange) {
+        props.onChange(e.target.checked ? 'checked' : 'unchecked');
+      }
+    }
+  } />;
 }
 
 export default Checkbox;
