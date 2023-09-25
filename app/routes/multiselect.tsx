@@ -24,14 +24,10 @@ export default function MultiSelect() {
   const flatTree = flattenTree(tree);
 
   function handleTweenSelection(lastIndex: number, newIndex: number, nextState: 'checked' | 'unchecked') {
-    const newSelectedChildren = flatTree.slice(
+    const children = flatTree.slice(
       Math.min(lastIndex, newIndex),
       Math.max(lastIndex, newIndex) + 1
-    );
-
-    console.log({ lastIndex, newIndex, newSelectedChildren });
-
-    const children = newSelectedChildren.filter((item) => item.type === "child") as Child[];
+    ).filter((item) => item.type === "child") as Child[];
 
     if(nextState === 'checked') {
       setSelectedChildren([...selectedChildren, ...children]);
@@ -85,7 +81,7 @@ export default function MultiSelect() {
   }) {
     // Stop propagation to prevent group click
     e.stopPropagation();
-    const nextState = selectedChildren.some((c) => c.name === child.name)
+    const nextState = selectedChildren.some((selectedChild) => selectedChild.name === child.name)
       ? "unchecked"
       : "checked";
 
@@ -110,20 +106,11 @@ export default function MultiSelect() {
   return (
     <main className="w-full">
       <div className="m-auto w-96">
-        <pre>
-          {JSON.stringify(
-            {
-              flatTree,
-            },
-            null,
-            2
-          )}
-        </pre>
         {tree.map((group, index) => {
           return (
             <div
               key={index}
-              className="flex flex-col"
+              className="flex flex-col select-none"
               onClick={(e) => handleGroupClick({ e, group })}
             >
               <div className="flex items-center">
@@ -140,13 +127,13 @@ export default function MultiSelect() {
                       : "unchecked"
                   }
                 />
-                <label>{group.name}</label>
+                <p>{group.name}</p>
               </div>
               {group.children?.map((child, index) => {
                 return (
                   <div
                     key={index}
-                    className="ml-4 flex items-center"
+                    className="ml-4 flex items-center select-none"
                     onClick={(e) => handleChildClick({ e, child })}
                   >
                     <Checkbox
@@ -156,7 +143,7 @@ export default function MultiSelect() {
                           : "unchecked"
                       }
                     />
-                    <label>{child.name}</label>
+                    <p>{child.name}</p>
                   </div>
                 );
               })}
@@ -164,7 +151,6 @@ export default function MultiSelect() {
           );
         })}
       </div>
-      <pre>{JSON.stringify({ tree }, null, 2)}</pre>
     </main>
   );
 }
@@ -184,59 +170,26 @@ var data: Group[] = [
   {
     name: "A",
     type: "group",
-    children: [
-      {
-        name: "A1",
-        type: "child",
-      },
-      {
-        name: "A2",
-        type: "child",
-      },
-      {
-        name: "A3",
-        type: "child",
-      },
-      {
-        name: "A4",
-        type: "child",
-      },
-    ],
+    children: generateChildren(5, "A"),
   },
   {
     name: "B",
     type: "group",
-    children: [
-      {
-        name: "B1",
-        type: "child",
-      },
-      {
-        name: "B2",
-        type: "child",
-      },
-      {
-        name: "B3",
-        type: "child",
-      },
-    ],
+    children: generateChildren(5, "B"),
   },
   {
     name: "C",
     type: "group",
-    children: [
-      {
-        name: "C1",
-        type: "child",
-      },
-      {
-        name: "C2",
-        type: "child",
-      },
-      {
-        name: "C3",
-        type: "child",
-      },
-    ],
+    children: generateChildren(5, "C"),
   }
 ];
+
+
+function generateChildren(count: number, parentName: string): Child[] {
+  return Array.from({ length: count }, (_, index) => {
+    return {
+      name: `${parentName}${index + 1}`,
+      type: "child",
+    };
+  });
+}
