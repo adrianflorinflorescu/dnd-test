@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import Checkbox from "~/components/Checkbox";
 
-const flattenTree = (tree: Group[]): (Group | Child)[] => {
+const flattenTree = (tree: Group[]): (Group | GChild)[] => {
   const temp = structuredClone(tree).flatMap((group) => {
     return [group, ...(group.children ?? [])];
   });
@@ -16,18 +17,19 @@ const flattenTree = (tree: Group[]): (Group | Child)[] => {
 
 export default function MultiSelect() {
   const [tree] = useState(data);
-  const [selectedChildren, setSelectedChildren] = useState<Child[]>([]);
+  const [selectedChildren, setSelectedChildren] = useState<GChild[]>([]);
   const [lastSelectedGroupOrChild, setLastSelectedGroupOrChild] = useState<
-    Group | Child | null
+    Group | GChild | null
   >(null);
 
   const flatTree = flattenTree(tree);
 
   function handleTweenSelection(lastIndex: number, newIndex: number, nextState: 'checked' | 'unchecked') {
+    console.log({lastIndex, newIndex, nextState});
     const children = flatTree.slice(
       Math.min(lastIndex, newIndex),
       Math.max(lastIndex, newIndex) + 1
-    ).filter((item) => item.type === "child") as Child[];
+    ).filter((item) => item.type === "child") as GChild[];
 
     if(nextState === 'checked') {
       setSelectedChildren([...selectedChildren, ...children]);
@@ -77,7 +79,7 @@ export default function MultiSelect() {
     child,
   }: {
     e: React.MouseEvent<HTMLDivElement, MouseEvent>;
-    child: Child;
+    child: GChild;
   }) {
     // Stop propagation to prevent group click
     e.stopPropagation();
@@ -103,11 +105,21 @@ export default function MultiSelect() {
     }
   }
 
+  function handleDragStart(result: any) {
+    console.log('start');
+  }
+
+  function handleDragEnd(result: any) {
+    console.log('end');
+  }
   return (
     <main className="w-full">
       <div className="m-auto w-96">
+        <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
         {tree.map((group, index) => {
           return (
+            <Droppable droppableId={group.name} key={group.name}>
+                        {(provided, snapshot) => { return(
             <div
               key={index}
               className="flex flex-col select-none"
@@ -131,9 +143,14 @@ export default function MultiSelect() {
               </div>
               {group.children?.map((child, index) => {
                 return (
+                  <Draggable draggableId={child.name} index={index} key={child.name}>
+                                                        {(provided, snapshot) => (
                   <div
                     key={index}
                     className="ml-4 flex items-center select-none"
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
                     onClick={(e) => handleChildClick({ e, child })}
                   >
                     <Checkbox
@@ -145,47 +162,52 @@ export default function MultiSelect() {
                     />
                     <p>{child.name}</p>
                   </div>
+                  )}
+                  </Draggable>
                 );
               })}
             </div>
+            )}
+        }</Droppable>
           );
         })}
+        </DragDropContext>
       </div>
     </main>
   );
 }
 
-type Child = {
+export type GChild = {
   name: string;
   type: "child";
 };
 
-type Group = {
+export type Group = {
   name: string;
   type: "group";
-  children: Child[] | undefined;
+  children: GChild[] | undefined;
 };
 
 var data: Group[] = [
   {
     name: "A",
     type: "group",
-    children: generateChildren(5, "A"),
+    children: generateChildren(335, "A"),
   },
   {
     name: "B",
     type: "group",
-    children: generateChildren(5, "B"),
+    children: generateChildren(335, "B"),
   },
   {
     name: "C",
     type: "group",
-    children: generateChildren(5, "C"),
+    children: generateChildren(335, "C"),
   }
 ];
 
 
-function generateChildren(count: number, parentName: string): Child[] {
+export function generateChildren(count: number, parentName: string): GChild[] {
   return Array.from({ length: count }, (_, index) => {
     return {
       name: `${parentName}${index + 1}`,
