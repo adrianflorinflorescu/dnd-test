@@ -281,7 +281,7 @@ export default function Multi() {
   return (
     <div className="bg-gray-200 w-full h-full flex gap-4 justify-center items-center">
       <div className="mx-auto bg-white shadow-md border border-gray-200 flex max-h-[calc(100vh-200px)] w-[720px]  flex-col">
-        <div className="shadow relative z-10">
+        <div className={`shadow relative z-10 ${hasReachedMax ? 'bg-green-50' : ''} `}>
           <div className="flex w-full gap-4 items-center p-4">
             <div className="text-sm">
               <p className="text-lg leading-none">Select profile and scenarios</p>
@@ -300,13 +300,13 @@ export default function Multi() {
 
             <div className="flex gap-2 ml-auto items-start text-sm">
               <button
-                className="border border-gray-300 px-4 py-2"
+                className="border border-gray-300 px-4 py-2 bg-white"
                 onClick={handleSelectAll}
               >
                 Select all
               </button>
               <button
-                className="border border-gray-300 px-4 py-2"
+                className="border border-gray-300 px-4 py-2 bg-white"
                 onClick={handleUnselectAll}
               >
                 Unselect all
