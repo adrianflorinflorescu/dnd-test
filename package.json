@@ -26,6 +26,7 @@
   ],
   "dependencies": {
     "@minoru/react-dnd-treeview": "^3.4.4",
+    "@popperjs/core": "^2.11.8",
     "@prisma/client": "^4.16.1",
     "@reduxjs/toolkit": "^1.9.5",
     "@remix-run/css-bundle": "^1.19.1",
@@ -39,6 +40,7 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-dnd": "^16.0.1",
     "react-dom": "^18.2.0",
+    "react-popper": "^2.3.0",
     "react-redux": "^8.1.2",
     "tiny-invariant": "^1.3.1"
   },

@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 
 type CheckboxProps = {
-  state: 'checked' | 'unchecked' | 'indeterminate';
-  onChange?: (state: 'checked' | 'unchecked') => void;
+  state: "checked" | "unchecked" | "indeterminate";
+  onChange?: (state: "checked" | "unchecked") => void;
+  disabled?: boolean;
 };
 
 function Checkbox(props: CheckboxProps) {
@@ -10,17 +11,23 @@ function Checkbox(props: CheckboxProps) {
 
   useEffect(() => {
     if (ref.current) {
-      ref.current.indeterminate = props.state === 'indeterminate';
+      ref.current.indeterminate = props.state === "indeterminate";
     }
   }, [props.state]);
 
-  return <input ref={ref} type="checkbox" checked={props.state === 'checked'} onChange={
-    (e) => {
-      if (props.onChange) {
-        props.onChange(e.target.checked ? 'checked' : 'unchecked');
-      }
-    }
-  } />;
+  return (
+      <input
+        ref={ref}
+        type="checkbox"
+        checked={props.state === "checked"}
+        onChange={(e) => {
+          if (props.onChange) {
+            props.onChange(e.target.checked ? "checked" : "unchecked");
+          }
+        }}
+        disabled={props.disabled}
+      />
+  );
 }
 
 export default Checkbox;
