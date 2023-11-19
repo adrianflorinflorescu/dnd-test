@@ -14,6 +14,8 @@ export function generateRandomString({i}: {i: number}): string {
   const randomSuffix = suffix[Math.floor(Math.random() * suffix.length)];
 
   const phrase = `${randomWhatIs}: ${randomAttribute} ${randomSuffix}.`;
+
+  memory[i] = phrase;
   
   return phrase;
 }

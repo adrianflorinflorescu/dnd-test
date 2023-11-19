@@ -142,7 +142,7 @@ export default function Multi() {
     {
       name: "Profile four",
       type: "group",
-      children: generateChildren(4, "Profile_four"),
+      children: generateChildren(4, "Profile four"),
     },
     {
       name: "Profile five",
@@ -233,7 +233,7 @@ export default function Multi() {
       name: "Profile twenty-two",
       type: "group",
       children: generateChildren(22, "Profile twenty-two"),
-    }
+    },
   ];
 
   const [selectedChildren, setSelectedChildren] = useState<GChild[]>([]);
@@ -295,7 +295,7 @@ export default function Multi() {
                 </p>
               ) : (
                 <p className="text-sm">
-                  Maximum selectable items: {MAX_ALLOWED_SELECTED}
+                  Maximum selectable items: {MAX_ALLOWED_SELECTED} ({selectedChildren.length} selected)
                 </p>
               )}
               </div>
@@ -317,7 +317,7 @@ export default function Multi() {
             </div>
           </div>
         </div>
-        <div className="max-h-full overflow-auto border border-gray-300 p-4">
+        <div className="max-h-full overflow-auto border border-gray-300 p-2">
           {groups.map((group) => {
             return (
               <GroupBlock
