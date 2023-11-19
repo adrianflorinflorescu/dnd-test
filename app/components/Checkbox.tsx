@@ -4,6 +4,7 @@ type CheckboxProps = {
   state: "checked" | "unchecked" | "indeterminate";
   onChange?: (state: "checked" | "unchecked") => void;
   disabled?: boolean;
+  className?: string;
 };
 
 function Checkbox(props: CheckboxProps) {
@@ -26,6 +27,9 @@ function Checkbox(props: CheckboxProps) {
           }
         }}
         disabled={props.disabled}
+        className={`${
+          props.className ? props.className : ""
+        } cursor-pointer`}
       />
   );
 }
