@@ -68,8 +68,8 @@ function GroupBlock({
     : "unchecked";
 
   return (
-    <div className="mb-4">
-      <label className="flex w-full gap-2 bg-blue-100 p-2">
+    <div className="mb-4 last:mb-0 bg-gray-50 border">
+      <label className="flex w-full gap-2 p-2 border-b">
         <Checkbox
           state={groupState}
           onChange={handleGroupChange}
@@ -81,7 +81,7 @@ function GroupBlock({
           }
         />
         <p
-        className="font-semibold text-base"
+        className="text-base"
         >{group.name}</p>
         <button
           className="ml-auto"
@@ -91,7 +91,7 @@ function GroupBlock({
             setIsExpanded((prev) => !prev)
           }}
         >
-          {isExpanded ? <div className="rotate-180"><Arrow width={24} height={24} /></div> : <div><Arrow  width={24} height={24}  /></div>}
+          {isExpanded ? <div className="-rotate-180 transition-all"><Arrow width={24} height={24} /></div> : <div className="transition-all"><Arrow  width={24} height={24}  /></div>}
         </button>
       </label>
       <div className={`grid grid-cols-2 ${isExpanded ? "" : "hidden"}`}>
@@ -102,7 +102,7 @@ function GroupBlock({
           const isWhite = index % 4 < 2;
           const isLastAndOdd = index === group.children!.length - 1 && index % 2 === 0;
           return (
-            <div key={index} className={`p-2 ${isWhite ? "bg-white" : "bg-gray-100"} ${isLastAndOdd ? "col-span-2" : ""}`}>
+            <div key={index} className={`p-2 ${isWhite ? "bg-white bg-opacity-20" : "bg-gray-200 bg-opacity-20"} ${isLastAndOdd ? "col-span-2" : ""}`}>
               <label className="flex select-none items-start gap-2">
                 <Checkbox
                   state={isSelected ? "checked" : "unchecked"}
@@ -112,7 +112,7 @@ function GroupBlock({
                   disabled={isDisabled}
                   className="top-1 relative"
                 />
-                <p className="text-sm first-letter:uppercase">{generateRandomString({i: index})}</p>
+                <p className="text-sm first-letter:uppercase text-gray-500">{generateRandomString({i: index})}</p>
               </label>
             </div>
           );
@@ -279,37 +279,34 @@ export default function Multi() {
   const hasReachedMax = selectedChildren.length >= MAX_ALLOWED_SELECTED;
 
   return (
-    <div className="bg-gray-200 w-full h-full flex justify-center items-center">
-      <div className="mx-auto bg-white shadow-md border border-gray-200 flex max-h-[calc(100vh-200px)] w-[720px]  flex-col  gap-4 p-4">
-        <div>
-          <div className="flex h-10 w-full justify-between gap-4">
+    <div className="bg-gray-200 w-full h-full flex gap-4 justify-center items-center">
+      <div className="mx-auto bg-white shadow-md border border-gray-200 flex max-h-[calc(100vh-200px)] w-[720px]  flex-col">
+        <div className="shadow relative z-10">
+          <div className="flex w-full gap-4 items-center p-4">
             <div className="text-sm">
-              <p className="text-base">
-                Select some items from the list below
-              </p>
+              <p className="text-lg leading-none">Select profile and scenarios</p>
               <div className="">
               {hasReachedMax ? (
-                <p className="bg-green-100 text-sm  text-green-800">
-                  ✅ You have reached the max, to change selection, unselect some
-                  items
+                <p className="text-sm  text-green-800 p-2 pl-0  leading-none">
+                   You have reached the max, to change selection, unselect some items ✅
                 </p>
               ) : (
-                <p className="text-sm">
+                <p className=" bg-green-0 text-sm text-green-800 p-2 pl-0 leading-none">
                   Maximum selectable items: {MAX_ALLOWED_SELECTED} ({selectedChildren.length} selected)
                 </p>
               )}
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 ml-auto items-start text-sm">
               <button
-                className="rounded-md border border-gray-300 px-2"
+                className="border border-gray-300 px-4 py-2"
                 onClick={handleSelectAll}
               >
                 Select all
               </button>
               <button
-                className="rounded-md border border-gray-300 px-2"
+                className="border border-gray-300 px-4 py-2"
                 onClick={handleUnselectAll}
               >
                 Unselect all
@@ -317,7 +314,7 @@ export default function Multi() {
             </div>
           </div>
         </div>
-        <div className="max-h-full overflow-auto border border-gray-300 p-2">
+        <div className="max-h-full overflow-auto p-4">
           {groups.map((group) => {
             return (
               <GroupBlock
@@ -331,7 +328,7 @@ export default function Multi() {
             );
           })}
         </div>
-        <div className="flex items-end justify-end gap-4">
+        <div className="flex items-end justify-end gap-4 p-4 bg-slate-50 border-t">
           <button>
             Cancel
           </button>
