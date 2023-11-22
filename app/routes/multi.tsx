@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { GChild, Group } from "./multiselect";
 import { generateChildren } from "./multiselect";
-import Checkbox from "~/components/Checkbox";
+import Checkbox from "~/components/Checkbox/Checkbox";
 import Arrow from "~/components/Arrow";
 import { generateRandomString } from "~/components/randomStringGenerator";
 
@@ -33,7 +33,7 @@ function GroupBlock({
     }
   }
 
-  const selectedOnGroup = selected.filter((c) => c.name.startsWith(group.name));
+  const selectedOnGroup = selected.filter((c) => c.parentName === group.name);
   const isGroupSelected =
     !!selectedOnGroup.length &&
     selectedOnGroup.length > 0 &&
@@ -42,13 +42,12 @@ function GroupBlock({
     selectedOnGroup.length >= MAX_ALLOWED_SELECTED || hasReachedMax;
 
   function handleGroupChange(
-    newState: "checked" | "unchecked" | "indeterminate"
+    e: React.ChangeEvent<HTMLInputElement>,
   ) {
     if (isGroupMaxed || isGroupSelected) {
-      console.log("handleGroupChange", "unselect");
+      console.log("handleGroupChange", "unselect", e);
       onUnselect(selectedOnGroup);
     } else {
-      console.log("handleGroupChange", "select", { newState });
       onSelect(
         group.children
           ? [
@@ -69,7 +68,7 @@ function GroupBlock({
 
   return (
     <div className="mb-4 last:mb-0 bg-gray-50 border">
-      <label className="flex w-full gap-2 p-2 border-b">
+      <label className="flex w-full gap-2 p-2 border-b items-center">
         <Checkbox
           state={groupState}
           onChange={handleGroupChange}
@@ -91,7 +90,7 @@ function GroupBlock({
             setIsExpanded((prev) => !prev)
           }}
         >
-          {isExpanded ? <div className="-rotate-180 transition-all"><Arrow width={24} height={24} /></div> : <div className="transition-all"><Arrow  width={24} height={24}  /></div>}
+          {isExpanded ? <div className="-rotate-180 transition-all"><Arrow width={18} height={18} /></div> : <div className="transition-all"><Arrow  width={18} height={18}  /></div>}
         </button>
       </label>
       <div className={`grid grid-cols-2 ${isExpanded ? "" : "hidden"}`}>
@@ -103,7 +102,7 @@ function GroupBlock({
           const isLastAndOdd = index === group.children!.length - 1 && index % 2 === 0;
           return (
             <div key={index} className={`p-2 ${isWhite ? "bg-white bg-opacity-20" : "bg-gray-200 bg-opacity-20"} ${isLastAndOdd ? "col-span-2" : ""}`}>
-              <label className="flex select-none items-start gap-2">
+              <label className="flex select-none items-center gap-2">
                 <Checkbox
                   state={isSelected ? "checked" : "unchecked"}
                   onChange={() => {
@@ -277,40 +276,34 @@ export default function Multi() {
   }
 
   const hasReachedMax = selectedChildren.length >= MAX_ALLOWED_SELECTED;
+  const isMaxGreaterThanSelectable = MAX_ALLOWED_SELECTED > groups.reduce((acc, group) => acc + (group.children?.length ?? 0), 0);
+  const areAllSelected = selectedChildren.length === groups.reduce((acc, group) => acc + (group.children?.length ?? 0), 0);
 
   return (
     <div className="bg-gray-200 w-full h-full flex gap-4 justify-center items-center">
       <div className="mx-auto bg-white shadow-md border border-gray-200 flex max-h-[calc(100vh-200px)] w-[720px]  flex-col">
-        <div className={`shadow relative z-10 ${hasReachedMax ? 'bg-green-50' : ''} `}>
+        <div className={`shadow relative z-10`}>
           <div className="flex w-full gap-4 items-center p-4">
             <div className="text-sm">
               <p className="text-lg leading-none">Select profile and scenarios</p>
-              <div className="">
-              {hasReachedMax ? (
-                <p className="text-sm  text-green-800 p-2 pl-0  leading-none">
-                   You have reached the max, to change selection, unselect some items ✅
-                </p>
-              ) : (
-                <p className=" bg-green-0 text-sm text-green-800 p-2 pl-0 leading-none">
-                  Maximum selectable items: {MAX_ALLOWED_SELECTED} ({selectedChildren.length} selected)
-                </p>
-              )}
-              </div>
             </div>
 
             <div className="flex gap-2 ml-auto items-start text-sm">
-              <button
+              {!hasReachedMax && !areAllSelected && <button
                 className="border border-gray-300 px-4 py-2 bg-white"
                 onClick={handleSelectAll}
               >
                 Select all
               </button>
-              <button
-                className="border border-gray-300 px-4 py-2 bg-white"
-                onClick={handleUnselectAll}
-              >
-                Unselect all
-              </button>
+              }
+              {selectedChildren.length > 0 && 
+                <button
+                  className="border border-gray-300 px-4 py-2 bg-white"
+                  onClick={handleUnselectAll}
+                >
+                  Unselect all
+                </button>
+              }
             </div>
           </div>
         </div>
@@ -328,13 +321,26 @@ export default function Multi() {
             );
           })}
         </div>
-        <div className="flex items-end justify-end gap-4 p-4 bg-slate-50 border-t">
-          <button>
-            Cancel
-          </button>
-          <button>
-            Save
-          </button>
+        <div className="flex p-4 bg-slate-50 border-t">
+            <div className="">
+              {hasReachedMax ? (
+                <p className="text-sm  text-green-800 p-2 pl-0  leading-none">
+                   ✅ You have reached the max ({MAX_ALLOWED_SELECTED}), to change selection, unselect some items 
+                </p>
+              ) : (
+                <p className=" bg-green-0 text-sm text-green-800 p-2 pl-0 leading-none">
+                  {isMaxGreaterThanSelectable ? 'Select items to add to your profile and scenarios' : `Maximum selectable items: ${MAX_ALLOWED_SELECTED} (${selectedChildren.length}/${MAX_ALLOWED_SELECTED} selected)`}
+                </p>
+              )}
+              </div>
+            <div className="flex items-end gap-4 ml-auto">
+            <button>
+              Cancel
+            </button>
+            <button>
+              Save
+            </button>
+          </div>
         </div>
       </div>
     </div>

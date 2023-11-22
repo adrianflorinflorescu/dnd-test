@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import Checkbox from "~/components/Checkbox";
+import Checkbox from "~/components/Checkbox/Checkbox";
 
 const flattenTree = (tree: Group[]): (Group | GChild)[] => {
   const temp = structuredClone(tree).flatMap((group) => {
@@ -180,6 +180,8 @@ export default function MultiSelect() {
 export type GChild = {
   name: string;
   type: "child";
+  parentName: string;
+  id: string;
 };
 
 export type Group = {
@@ -212,6 +214,8 @@ export function generateChildren(count: number, parentName: string): GChild[] {
     return {
       name: `${parentName}${index + 1}`,
       type: "child",
+      parentName: parentName,
+      id: `${parentName}${index + 1}`,
     };
   });
 }
