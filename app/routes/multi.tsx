@@ -102,7 +102,7 @@ function GroupBlock({
           const isLastAndOdd = index === group.children!.length - 1 && index % 2 === 0;
           return (
             <div key={index} className={`p-2 ${isWhite ? "bg-white bg-opacity-20" : "bg-gray-200 bg-opacity-20"} ${isLastAndOdd ? "col-span-2" : ""}`}>
-              <label className="flex select-none items-center gap-2">
+              <label className="flex select-none items-start gap-2">
                 <Checkbox
                   state={isSelected ? "checked" : "unchecked"}
                   onChange={() => {
@@ -111,7 +111,7 @@ function GroupBlock({
                   disabled={isDisabled}
                   className="top-1 relative"
                 />
-                <p className="text-sm first-letter:uppercase text-gray-500">{generateRandomString({i: index})}</p>
+                <p className="text-sm first-letter:uppercase flex-1 text-gray-500">{generateRandomString({i: index})}</p>
               </label>
             </div>
           );

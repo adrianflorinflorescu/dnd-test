@@ -27,7 +27,7 @@ input[type=checkbox].forwarded-checkbox:checked:hover::before, input.forwarded-c
 }
 input[type=checkbox].forwarded-checkbox:indeterminate::before, input.forwarded-checkbox:indeterminate::before {
   transform: scale(1);
-  clip-path: inset(35% 7% 35% 7%);
+  clip-path: inset(40% 7% 40% 7%);
   background: deepskyblue;
 }
 input[type=checkbox].forwarded-checkbox:indeterminate:hover::before, input.forwarded-checkbox:indeterminate:hover::before {
